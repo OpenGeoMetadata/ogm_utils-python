@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+
+__author__ = 'cbarne02'
+
+
+"""
+to use:
+1. clone your github repository
+2. point this script at the root directory of your cloned repository
+3. run the script
+4. when you're finished making changes, make a pull request to your github repository
+
+should I have a commit log feature?
+
+one to extract metadata from an ogp instance, one to augment said
+metadata with location info.
+
+one to create a directory structure, rename metadata (iso vs fgdc)
+
+one to create/update a json object that maps metadata id to path
+"""
+
+
+import os
+import sys
+import getopt
+from repo_utils import write_to_repository
+
+
+def usage():
+    message = """'-r' or '--repository': repository path.
+    Defaults to current directory.
+'-m' or '--metadata': path to the xml metadata file.
+    REQUIRED
+'-i' or '--layer_id': unique id for the data layer described by the metadata.
+    REQUIRED
+'-o' or '--overwrite': boolean 'true' or 'false' to overwrite existing metadata.
+    Defaults to 'false'.
+    """
+    print message
+
+
+if __name__ == "__main__":
+    argv = sys.argv
+    repo_path = None
+    overwrite = None
+    file_path = None
+    ow = None
+
+    try:
+        opts, args = getopt.getopt(argv[1:], "hr:m:o:i:", ["help", "repository=", "metadata_path=",
+                                                           "overwrite=", "layer_id="])
+        for opt, arg in opts:
+            if opt in ("-h", "--help"):
+                usage()
+                sys.exit()
+            elif opt in("-r", "--repository"):
+                repo_path = arg
+            elif opt in("-m", "--metadata_path"):
+                file_path = arg
+            elif opt in("-o", "--overwrite"):
+                ow = arg
+            elif opt in("-i", "--layer_id"):
+                file_id = arg
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    if file_id is None or file_path is None:
+        # file path and id are required
+        usage()
+        sys.exit()
+
+    #assume the cwd is the repository, if not provided
+    if repo_path is None:
+        repo_path = os.getcwd()
+
+    bool_ow = False
+    if ow is not None:
+        ow = ow.lower()
+        if ow in ["true", "t", "yes", "y"]:
+            bool_ow = True
+    try:
+        fs = ""
+        with open(file_path, "r") as f:
+            fs = f.read()
+
+        write_to_repository(file_id, fs, repo_path, bool_ow)
+
+    except Exception as e:
+        print e.message
+        sys.exit(2)
+
+
+
+
+
+
+

@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+
+__author__ = 'cbarne02'
+
+
+"""
+to use:
+1. clone your github repository
+2. point this script at the root directory of your cloned repository
+3. run the script to find the metadata in your local repository based on layer id
+
+by default, uses layers.json to search and retrieve. may attempt a more general solution
+for instances where layers.json is absent
+"""
+
+
+import sys
+import getopt
+from repo_utils import find_from_layer_id
+
+
+def usage():
+    message = """'-r' or '--repository': repository path.
+    Defaults to directory 'REPO_PATH' specified in repo_utils.py.
+'-i' or '--layer_id': unique id for the data layer described by the metadata.
+    REQUIRED
+    """
+    print message
+
+
+if __name__ == "__main__":
+    argv = sys.argv
+    repo_path = None
+    file_id = None
+
+    try:
+        opts, args = getopt.getopt(argv[1:], "hr:i:", ["help", "repository=", "layer_id="])
+        for opt, arg in opts:
+            if opt in ("-h", "--help"):
+                usage()
+                sys.exit()
+            elif opt in("-r", "--repository"):
+                repo_path = arg
+            elif opt in("-i", "--layer_id"):
+                file_id = arg
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    if file_id is None:
+        # file id is required
+        usage()
+        sys.exit()
+
+    try:
+        if repo_path is None:
+            tup = find_from_layer_id(file_id)
+
+        else:
+            tup = find_from_layer_id(file_id, repo_path)
+
+        print tup[0]
+        print "contains types:" , tup[1]
+    except Exception as e:
+        print e.message
+        sys.exit(2)
+
+
+
+
+
+
+
