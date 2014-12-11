@@ -1,4 +1,4 @@
-__author__ = 'cbarne02'
+__author__ = 'chrissbarnett'
 """
 Uses the FNV-1a hashcode on the layerid to attempt to distribute files evenly across
 directories.

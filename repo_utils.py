@@ -1,4 +1,4 @@
-__author__ = 'cbarne02'
+__author__ = 'chrissbarnett'
 
 import os
 import json
@@ -6,10 +6,12 @@ from repo_dir import get_directory
 from metadata_type import get_metadata_type
 from xml.dom.minidom import *
 
+# this should be the absolute path to the local clone of your repository
 # REPO_PATH = "/usr/local/metadata"
-# REPO_PATH = "/Users/cbarne02/Documents/code/git/edu.tufts"
-REPO_PATH = "/Users/cbarne02/Documents/code/git/edu.harvard"
+REPO_PATH = "/Users/cbarne02/Documents/code/git/edu.tufts"
 
+FGDC_HEADER = ['<?xml version="1.0" encoding="utf-8" ?>',
+               '<!DOCTYPE metadata SYSTEM "http://www.fgdc.gov/metadata/fgdc-std-001-1998.dtd">']
 
 
 def get_filename_from_type(f):
@@ -18,13 +20,18 @@ def get_filename_from_type(f):
     return d.get(mt), tree
 
 
-def write_metadata(tree, path, overwrite):
+def get_header(mt):
+    d = {'FGDC': FGDC_HEADER, 'ISO19139': None}
+    return d.get(mt)
+
+
+def write_metadata(tree, meta_type, path, overwrite):
 
     if not os.path.exists(path) or overwrite:
         try:
             with open(path, "w+") as d:
-                d.write('<?xml version="1.0" encoding="utf-8" ?>')
-                d.write('<!DOCTYPE metadata SYSTEM "http://www.fgdc.gov/metadata/fgdc-std-001-1998.dtd">')
+                for line in get_header(meta_type):
+                    d.write(line)
                 tree.write(d, xml_declaration=False, encoding="utf-8")
             print "Metadata written at: " + path
         except:
@@ -78,7 +85,7 @@ def write_to_repository(file_id, fs, repo_path=REPO_PATH, overwrite=False):
         else:
             raise Exception("A metadata directory with that id already exists in the repository.")
 
-    write_metadata(tree, fname, overwrite)
+    write_metadata(tree, type_name, fname, overwrite)
     # create/update a json object at repository root mapping layer ids to directories
     update_layers_json(file_id, path, repo_path)
 

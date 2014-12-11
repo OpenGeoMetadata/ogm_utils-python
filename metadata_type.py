@@ -1,6 +1,7 @@
-__author__ = 'cbarne02'
+__author__ = 'chrissbarnett'
 
 import xml.etree.ElementTree as ET
+
 
 def get_metadata_type(xml_string):
     doc = get_doc(xml_string)
@@ -46,12 +47,6 @@ def get_doc(xml_string):
 
 
 '''
-
-class xml.etree.ElementTree.XMLParser(html=0, target=None, encoding=None)
-Element structure builder for XML source data, based on the expat parser. html are predefined HTML entities.
-This flag is not supported by the current implementation. target is the target object. If omitted, the builder uses an
-instance of the standard TreeBuilder class. encoding [1] is optional. If given, the value overrides
-the encoding specified in the XML file.
 
 eventually, we'll want to add in resource locations, source info
 
